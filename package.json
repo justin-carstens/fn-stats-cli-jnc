@@ -1,0 +1,10 @@
+{
+  "name": "fortnite-epic-api-stat-puller-jnc",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@squiddleton/epic": "^0.10.0",
+    "open": "^10.1.0"
+  }
+}
