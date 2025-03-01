@@ -11,10 +11,12 @@
  */
 
 // Import required dependencies
-import { EpicClient } from './epicWrapper.js';  // Our CommonJS wrapper for @squiddleton/epic
+import { EpicClient } from './src/epicWrapper.js';  // Our CommonJS wrapper for @squiddleton/epic
 import { writeFileSync } from 'node:fs';        // Node.js file system module
 import open from 'open';                        // Opens URLs in default browser
 import * as readline from 'node:readline/promises';  // Promise-based readline
+import { mkdir } from 'node:fs/promises';
+import { join } from 'node:path';
 
 // Initialize Epic Games client
 // This client handles all API communication with Epic's services
@@ -125,10 +127,15 @@ try {
         secret: deviceAuthResponse.secret
     };
 
-    // Save credentials to local file system
-    // Uses pretty printing (null, 2) for readable JSON
-    writeFileSync('./deviceAuthGrant.json', JSON.stringify(deviceAuthGrant, null, 2));
-    console.log('Device authentication credentials saved successfully!');
+    // Create config directory if it doesn't exist
+    await mkdir('./config', { recursive: true });
+
+    // Save credentials to config directory
+    writeFileSync(
+        join('./config', 'deviceAuthGrant.json'), 
+        JSON.stringify(deviceAuthGrant, null, 2)
+    );
+    console.log('Device authentication credentials saved successfully in config directory!');
     
 } catch (error) {
     // Handle any errors that occur during the process

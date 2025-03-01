@@ -8,7 +8,7 @@ const __dirname = dirname(__filename);
 
 // Read season definitions using absolute path to module location
 const seasonDefs = JSON.parse(
-    readFileSync(join(__dirname, 'seasonDefinitions.json'), 'utf8')
+    readFileSync(join(__dirname, '../seasonDefinitions.json'), 'utf8')
 );
 
 // Build timestamps object

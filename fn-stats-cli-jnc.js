@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { PlayerStats, teamSizes, buildModes, compModes, gameModes } from './playerStats.js';
-import { seasonTimestamps } from './getSeasonTimes.js';
+import { FortniteStatsRetriever } from './src/FortniteStatsRetriever.js';
+import { seasonTimestamps } from './src/getSeasonTimes.js';
 
 // Display help text if requested
 if (process.argv[2] === '--help' || process.argv[2] === '-h') {
@@ -116,7 +116,7 @@ filters.forEach((filter, index) => {
     }
 });
 
-// Create player stats object and generate report
-const playerOne = new PlayerStats(playerName, timeWindow, filters);
+// Create stats retriever object and generate report
+const playerStats = new FortniteStatsRetriever(playerName, timeWindow, filters);
 
 console.log('done');

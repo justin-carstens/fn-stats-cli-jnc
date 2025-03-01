@@ -19,6 +19,7 @@ yarn-error.log*
 
 # Authentication credentials
 deviceAuthGrant.json
+config/
 
 # Operating System
 .DS_Store

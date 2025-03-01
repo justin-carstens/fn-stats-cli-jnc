@@ -4,7 +4,8 @@
   "description": "Command-line tool to pull Fortnite player statistics using Epic Games' API",
   "type": "module",
   "bin": {
-    "fn-stats": "./fn-stats-cli-jnc.js"
+    "fn-stats": "./fn-stats-cli-jnc.js",
+    "fn-stats-auth": "./epic-device-auth-jnc.js"
   },
   "scripts": {
     "auth": "node epic-device-auth-jnc.js"
@@ -27,10 +28,8 @@
   },
   "files": [
     "fn-stats-cli-jnc.js",
-    "playerStats.js",
-    "getSeasonTimes.js",
     "epic-device-auth-jnc.js",
-    "epicWrapper.js",
+    "src",
     "seasonDefinitions.json",
     "README.md"
   ]

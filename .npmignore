@@ -7,6 +7,7 @@ yarn-error.log*
 .env*
 .vscode/
 deviceAuthGrant.json
+config/
 .DS_Store
 Thumbs.db
 

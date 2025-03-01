@@ -24,40 +24,22 @@ npm install -g fn-stats-cli-jnc
 
 The first time you use this tool, you'll need to authenticate with Epic Games. This is a one-time process that must be run from the package installation directory:
 
-1. Find the package installation directory:
-   ```bash
-   # On Windows:
-   cd %APPDATA%\npm\node_modules\fn-stats-cli-jnc
+```bash
+fn-stats-auth
+```
 
-   # On macOS/Linux:
-   cd $(npm root -g)/fn-stats-cli-jnc
-   ```
-
-2. Run the authentication script from this directory:
-   ```bash
-   npm run auth
-   ```
-
-3. Your default web browser will open to Fortnite.com
-   - If you're not already logged in, you'll see the Fortnite page with your name in the top right
-   - If not, log in with your Epic Games account
-   - The script will ask if you've completed this step
-
-4. After confirming login (with "yes"), a new browser tab will open
+The authentication process will:
+1. Open your default web browser to Fortnite.com
+2. If you're not already logged in, sign in with your Epic Games account
+3. The script will ask if you've completed this step
+4. After confirming (with "yes"), a new browser tab will open
    - It will contain JSON text wrapped in curly braces {}
    - Copy ALL of this text, including the braces
-   - Return to your terminal/command prompt
+5. Paste the entire JSON text into the command prompt
+   - The script will create permanent device credentials
+   - These are saved in a config directory
 
-5. Paste the entire JSON text into the command prompt.
-   - The script will extract the necessary authorization code
-   - It will then create permanent device credentials
-   - These are saved in `deviceAuthGrant.json`
-
-Note: The authentication must be run from the installation directory because it needs to create `deviceAuthGrant.json` in the correct location. After authentication is complete, you can run `fn-stats` from any directory.
-
-Success! You can now use the stats tool without needing to authenticate again. The credentials are permanent unless you explicitly revoke them in your Epic Games account settings.
-
-Note: Keep your `deviceAuthGrant.json` file secure as it contains your authentication credentials.
+Note: Keep your authentication credentials secure. They are permanent unless you explicitly revoke them in your Epic Games account settings.
 
 ## Usage
 
@@ -102,13 +84,13 @@ fn-stats "Player Name With Spaces" [filters...]
 fn-stats PlayerName
 
 # Get stats for player name with spaces
-fn-stats "Ninja Warrior 123"
+fn-stats "PP Zilla"
 
 # Get Chapter 5 Season 2 stats for player with spaces
-fn-stats "My Cool Name" ch5s2
+fn-stats "PP Zilla" ch5s2
 
-# Last week's stats
-fn-stats PlayerName lastweek=1
+# Last 2 week's stats
+fn-stats "RottenTwinkies" lastweek=2
 
 # Solo zero-build stats only
 fn-stats PlayerName solo zeroBuild
@@ -117,7 +99,7 @@ fn-stats PlayerName solo zeroBuild
 fn-stats PlayerName bots
 
 # Custom date range
-fn-stats PlayerName "starttime=24 May 2024 00:00:00 GMT" "endtime=26 May 2024 00:00:00 GMT"
+fn-stats PlayerName "starttime=24 May 2024 GMT" "endtime=26 May 2024 GMT"
 ```
 
 ## Updating Season Definitions
