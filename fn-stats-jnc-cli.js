@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { PlayerStats, teamSizes, buildModes, compModes, gameModes } from './playerStats.js';
 import { seasonTimestamps } from './getSeasonTimes.js';
 
