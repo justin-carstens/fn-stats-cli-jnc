@@ -3,6 +3,56 @@
 import { PlayerStats, teamSizes, buildModes, compModes, gameModes } from './playerStats.js';
 import { seasonTimestamps } from './getSeasonTimes.js';
 
+// Display help text if requested
+if (process.argv[2] === '--help' || process.argv[2] === '-h') {
+    console.log(`
+Fortnite Stats CLI - Get player statistics from Epic Games API
+
+Usage: fn-stats <player-name> [filters...]
+
+Default Behavior:
+  - Shows current season (ch6s2) stats
+  - Shows zero-build mode only (excludes build mode)
+  - Excludes bot matches entirely
+  - Shows all game modes (regular and reload)
+  - Shows all team sizes (solo, duo, trio*, squad)
+  - Shows both pubs and ranked modes
+  * Note: Trio is not available in reload mode
+
+Time Window Filters:
+  ch1s1-ch6s2    Specific season (also: og, og2, Rs1, Rs2, lifetime)
+  lastweek=N     Stats from last N weeks
+  lastday=N      Stats from last N days
+  lastmonth=N    Stats from last N months
+  starttime=DATE Custom start time (GMT)
+  endtime=DATE   Custom end time (GMT)
+
+Game Mode Filters:
+  zeroBuild      Zero build mode (default)
+  build          Build mode (must be explicitly requested)
+  regular        Regular BR mode
+  reload         Reload BR mode
+  solo           Solo team size
+  duo            Duo team size
+  trio           Trio team size
+  squad          Squad team size
+  pubs           Public matches
+  ranked         Ranked matches
+  bots           Bot matches (must be explicitly requested)
+
+Examples:
+  fn-stats PlayerName                    Current season stats
+  fn-stats "Player With Spaces"          Handle spaces in name
+  fn-stats PlayerName ch5s2              Chapter 5 Season 2 stats
+  fn-stats PlayerName lastweek=1         Stats over the last week
+  fn-stats "Player Name" lastday=3       Stats over the last 3 days /w spaces in player name
+  fn-stats PlayerName solo zeroBuild     Solo zero-build only
+  fn-stats PlayerName bots               Include bot matches
+  fn-stats PlayerName build ranked       Build mode ranked matches
+`);
+    process.exit(0);
+}
+
 // Helper function to extract numbers from filter strings like "lastweek=3"
 function getFirstNumberAfterString(str, searchString) {
     const regex = new RegExp(`${searchString}\\D*(\\d+)`);

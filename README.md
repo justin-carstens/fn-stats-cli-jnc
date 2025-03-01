@@ -2,6 +2,18 @@
 
 Command-line tool to pull player statistics from Fortnite using Epic Games' API.
 
+## Prerequisites
+
+This tool requires Node.js version 18 or higher. To install Node.js:
+
+1. Visit [nodejs.org](https://nodejs.org/)
+2. Download and install the "LTS" (Long Term Support) version
+3. Verify installation by opening a terminal/command prompt and running:
+   ```bash
+   node --version
+   ```
+   You should see a version number like `v18.x.x` or higher
+
 ## Installation
 
 ```bash

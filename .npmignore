@@ -1,0 +1,39 @@
+# Include everything from .gitignore
+node_modules/
+package-lock.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.env*
+.vscode/
+deviceAuthGrant.json
+.DS_Store
+Thumbs.db
+
+# Additional npm-specific ignores
+# Source control
+.git/
+.gitignore
+
+# Documentation and examples
+docs/
+examples/
+*.md
+!README.md
+
+# Development files
+*.test.js
+*.spec.js
+test/
+__tests__/
+coverage/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Development configurations
+.eslintrc*
+.prettierrc*
+.editorconfig
