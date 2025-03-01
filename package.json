@@ -1,6 +1,6 @@
 {
   "name": "fn-stats-cli-jnc",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Command-line tool to pull Fortnite player statistics using Epic Games' API",
   "type": "module",
   "bin": {
