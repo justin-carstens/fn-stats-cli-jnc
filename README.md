@@ -22,27 +22,38 @@ npm install -g fn-stats-cli-jnc
 
 ## First-Time Authentication
 
-The first time you use this tool, you'll need to authenticate with Epic Games. This is a one-time process that creates permanent credentials:
+The first time you use this tool, you'll need to authenticate with Epic Games. This is a one-time process that must be run from the package installation directory:
 
-1. Run the authentication script:
+1. Find the package installation directory:
+   ```bash
+   # On Windows:
+   cd %APPDATA%\npm\node_modules\fn-stats-cli-jnc
+
+   # On macOS/Linux:
+   cd $(npm root -g)/fn-stats-cli-jnc
+   ```
+
+2. Run the authentication script from this directory:
    ```bash
    npm run auth
    ```
 
-2. Your default web browser will open to Fortnite.com
+3. Your default web browser will open to Fortnite.com
    - If you're not already logged in, you'll see the Fortnite page with your name in the top right
    - If not, log in with your Epic Games account
    - The script will ask if you've completed this step
 
-3. After confirming login (with "yes"), a new browser tab will open
+4. After confirming login (with "yes"), a new browser tab will open
    - It will contain JSON text wrapped in curly braces {}
    - Copy ALL of this text, including the braces
    - Return to your terminal/command prompt
 
-4. Paste the entire JSON text into the command prompt.
+5. Paste the entire JSON text into the command prompt.
    - The script will extract the necessary authorization code
    - It will then create permanent device credentials
    - These are saved in `deviceAuthGrant.json`
+
+Note: The authentication must be run from the installation directory because it needs to create `deviceAuthGrant.json` in the correct location. After authentication is complete, you can run `fn-stats` from any directory.
 
 Success! You can now use the stats tool without needing to authenticate again. The credentials are permanent unless you explicitly revoke them in your Epic Games account settings.
 
