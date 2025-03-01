@@ -1,8 +1,26 @@
 {
-  "name": "fortnite-epic-api-stat-puller-jnc",
-  "type": "module",
+  "name": "fn-stats-cli-jnc",
   "version": "1.0.0",
-  "private": true,
+  "description": "Command-line tool to pull Fortnite player statistics using Epic Games' API",
+  "type": "module",
+  "bin": {
+    "fn-stats": "./fn-stats-cli-jnc.js"
+  },
+  "scripts": {
+    "auth": "node epic-device-auth-jnc.js"
+  },
+  "keywords": [
+    "fortnite",
+    "stats",
+    "epic-games",
+    "cli"
+  ],
+  "author": "Justin Carstens",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/justin-carstens/fn-stats-cli-jnc.git"
+  },
   "dependencies": {
     "@squiddleton/epic": "^0.10.0",
     "open": "^10.1.0"
