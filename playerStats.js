@@ -1,5 +1,10 @@
 import { EpicClient } from './epicWrapper.js';
 import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+
+// Get directory path of current module
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // Constants that define valid Fortnite gameplay modes and configurations
 export const teamSizes = ['solo', 'duo', 'trio', 'squad'];
@@ -19,7 +24,7 @@ export class PlayerStats {
     // Authenticates with Epic Games using device auth grant
     loginEpic = async (epicClient) => {
         const grant = JSON.parse(
-            readFileSync('./deviceAuthGrant.json', 'utf8')
+            readFileSync(join(__dirname, 'deviceAuthGrant.json'), 'utf8')
         );
         console.log(epicClient.accountId);
         if (epicClient.accountId == null) {

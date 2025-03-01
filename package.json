@@ -24,5 +24,14 @@
   "dependencies": {
     "@squiddleton/epic": "^0.10.0",
     "open": "^10.1.0"
-  }
+  },
+  "files": [
+    "fn-stats-cli-jnc.js",
+    "playerStats.js",
+    "getSeasonTimes.js",
+    "epic-device-auth-jnc.js",
+    "epicWrapper.js",
+    "seasonDefinitions.json",
+    "README.md"
+  ]
 }
