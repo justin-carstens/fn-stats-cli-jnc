@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /**
  * Epic Games Authentication Script
  * 
@@ -15,8 +17,13 @@ import { EpicClient } from './src/epicWrapper.js';  // Our CommonJS wrapper for 
 import { writeFileSync } from 'node:fs';        // Node.js file system module
 import open from 'open';                        // Opens URLs in default browser
 import * as readline from 'node:readline/promises';  // Promise-based readline
-import { mkdir } from 'node:fs/promises';
-import { join } from 'node:path';
+import { mkdir } from 'node:fs/promises';        // Promise-based file system operations
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+// Get absolute path to package directory
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Initialize Epic Games client
 // This client handles all API communication with Epic's services
@@ -128,14 +135,15 @@ try {
     };
 
     // Create config directory if it doesn't exist
-    await mkdir('./config', { recursive: true });
+    const configDir = join(__dirname, 'config');
+    await mkdir(configDir, { recursive: true });
 
-    // Save credentials to config directory
+    // Save credentials to config directory using absolute path
     writeFileSync(
-        join('./config', 'deviceAuthGrant.json'), 
+        join(configDir, 'deviceAuthGrant.json'), 
         JSON.stringify(deviceAuthGrant, null, 2)
     );
-    console.log('Device authentication credentials saved successfully in config directory!');
+    console.log('Device authentication credentials saved successfully in package config directory!');
     
 } catch (error) {
     // Handle any errors that occur during the process
