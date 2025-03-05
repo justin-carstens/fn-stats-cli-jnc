@@ -240,10 +240,12 @@ export function subtractRawFortniteStats(largerWindow, smallerWindow) {
             Object.keys({
                 ...largerWindow.stats,
                 ...smallerWindow.stats
-            }).map(key => [
-                key,
-                (largerWindow.stats[key] || 0) - (smallerWindow.stats[key] || 0)
-            ])
+            }).map(key => {
+                const largerWindowValue = largerWindow.stats[key];
+                const smallerWindowValue = smallerWindow.stats[key];
+                return [ key,(largerWindowValue || 0) - (smallerWindowValue || 0)]
+                }
+            )
         )
     };
 }
