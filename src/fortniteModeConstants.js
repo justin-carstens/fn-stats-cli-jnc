@@ -24,7 +24,7 @@ export const statPattern = {
     top5: 'br_placetop5_',
     top6: 'br_placetop6_',
     top10: 'br_placetop10_',
-    top12: 'br_place_top12_',
+    top12: 'br_placetop12_',
     top25: 'br_placetop25_',
     minutes: 'br_minutesplayed'
 };

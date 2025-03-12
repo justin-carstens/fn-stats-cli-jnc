@@ -85,36 +85,39 @@ Object.keys(seasonTimestamps).forEach(season => {
 timeWindow = seasonTimestamps[selectSeason];
 console.log(timeWindow);
 
-// Process time window filters
-// Supports: lastweek=N, lastday=N, lastmonth=N, starttime=DATE, endtime=DATE
-// Removes processed filters from the filters array
-filters.forEach((filter, index) => {
-    if (filter.toLowerCase().includes('lastweek')) {
-        const nweeks = getFirstNumberAfterString(filter.toLowerCase(), 'lastweek=');
+// Process time window filters - safer approach
+const remainingFilters = [];
+for (const filter of filters) {
+    const filterLower = filter.toLowerCase();
+    
+    if (filterLower.includes('lastweek')) {
+        const nweeks = getFirstNumberAfterString(filterLower, 'lastweek=');
         timeWindow.startTime = Math.round(Date.now()/1000-86400*7*nweeks);
-        filters.splice(index, 1);
     }
-    if (filter.toLowerCase().includes('lastday')) {
-        const ndays = getFirstNumberAfterString(filter.toLowerCase(), 'lastday=');
+    else if (filterLower.includes('lastday')) {
+        const ndays = getFirstNumberAfterString(filterLower, 'lastday=');
         timeWindow.startTime = Math.round(Date.now()/1000-86400*ndays);
-        filters.splice(index, 1);
     }
-    if (filter.toLowerCase().includes('lastmonth')) {
-        const nmonths = getFirstNumberAfterString(filter.toLowerCase(), 'lastmonth=');
+    else if (filterLower.includes('lastmonth')) {
+        const nmonths = getFirstNumberAfterString(filterLower, 'lastmonth=');
         timeWindow.startTime = Math.round(Date.now()/1000-86400*nmonths*30);
-        filters.splice(index, 1);
     }
-    if (filter.toLowerCase().includes('starttime')) {
+    else if (filterLower.includes('starttime')) {
         const start_string = filter.split("=")[1];
         timeWindow.startTime = Math.round(Date.parse(start_string)/1000);
-        filters.splice(index, 1);
     }
-    if (filter.toLowerCase().includes('endtime')) {
+    else if (filterLower.includes('endtime')) {
         const end_string = filter.split("=")[1];
         timeWindow.endTime = Math.round(Date.parse(end_string)/1000);
-        filters.splice(index, 1);
     }
-});
+    else {
+        remainingFilters.push(filter);
+    }
+}
+
+// Replace the filters array with the remaining filters
+filters.length = 0;
+filters.push(...remainingFilters);
 
 // Create stats retriever object and generate report
 const playerStats = new FortniteStatsRetriever(playerName, timeWindow, filters);

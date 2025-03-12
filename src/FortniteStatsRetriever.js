@@ -74,7 +74,7 @@ export class FortniteStatsRetriever {
         const tomorrowMidnightGMT = Math.round(tomorrow.getTime() / 1000);
         
         // Get the Ch1S1 start timestamp (beginning of Fortnite)
-        const ch1s1Start = seasonTimestamps.ch6s2.startTime-86400*81;
+        const ch1s1Start = seasonTimestamps.ch1s1.startTime;
         
         // Set up time windows for stat retrieval
         // 1. Get stats from Ch1S1 to tomorrow midnight GMT ("now")
@@ -110,10 +110,6 @@ export class FortniteStatsRetriever {
         // Get accumulated stats for all time periods
         const rawToNow = await this.epicClient.fortnite.getStats(this.epicId.id, fromCh1s1ToNow);
         console.log(`Time window "Now": ${formatTime(fromCh1s1ToNow.startTime)} to ${formatTime(fromCh1s1ToNow.endTime)}`);
-        let filteredRawToNow=Object.keys(rawToNow.stats).
-            filter(key=>key.includes('matchesplayed')).
-            filter(key=>key.includes('nobuildbr_squad'));
-        filteredRawToNow.forEach(key=>console.log(key+': %d',rawToNow.stats[key]));
         
 
         // Only make additional API call if needed (optimization)
