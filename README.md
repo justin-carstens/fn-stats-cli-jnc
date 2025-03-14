@@ -62,20 +62,42 @@ fn-stats "Player Name With Spaces" [filters...]
 - Shows all team sizes (solo, duo, trio, squad)
 - Shows both pubs and ranked modes
 
+### Command-Line Options
+
+The tool supports several display and processing options:
+
+- **`--raw` / `-r`**: Shows raw stats output directly from the API instead of the organized nested structure
+- **`--TRN` / `-t`**: Uses TRN-style (FortniteTracker) format that groups stats only by team sizes (solo/duo/trio/squad)
+- **`--direct` / `-d`**: Uses direct API call method (single API call) instead of the default triple API call technique
+- **`--quiet` / `-q`**: Suppresses informational log output (shows only the results)
+
+You can combine multiple options:
+```bash
+fn-stats "Player Name" ch5s2 --raw --quiet solo
+```
+
 ### Available Filters
 
 #### Time Windows
-- Specific season: `ch1s1` through `ch6s2`, `og`, `og2`, `Rs1`, `Rs2`, `lifetime`
-- Last N weeks: `lastweek=N`
-- Last N days: `lastday=N`
-- Last N months: `lastmonth=N`
-- Custom dates: `starttime=DATE` and/or `endtime=DATE` (use GMT dates)
+- **Seasons:** `ch1s1` through `ch6s2`, `og`, `remix`, `Reloads1`, `Reloads2`, `lifetime`
+- **Recent periods:**
+  - Last N weeks: `lastweek=N`
+  - Last N days: `lastday=N`
+  - Last N months: `lastmonth=N`
+- **Custom range:** `starttime=DATE` and/or `endtime=DATE` (use GMT dates)
+
+> **Note on Season Data:** Due to the unpredictable nature of Epic's snapshot system, specifying seasons by name may not always yield complete or correct results. Epic's API works by comparing snapshots taken at different times, and these snapshots aren't always available at consistent intervals, especially for older data. In these cases, you can "find" the desired season data by manually specifying start and end times until you get the expected results. For example:
+> ```bash
+> # Try different time windows to locate complete season data
+> fn-stats PlayerName "starttime=3 June 2023 00:00:00 GMT" "endtime=6 August 2023 23:59:59 GMT"
+> ```
+> For a detailed explanation of how Epic's snapshot system works, see the [API Working Theory](doc/EpicStatAPIWorkingTheory.MD) document.
 
 #### Game Modes
-- Build modes: `zeroBuild`, `build`
-- Game types: `regular`, `reload`
-- Team sizes: `solo`, `duo`, `trio`, `squad`
-- Competition: `pubs`, `ranked`, `bots`
+- **Build modes:** `zeroBuild`, `build`
+- **Game types:** `regular`, `reload`
+- **Team sizes:** `solo`, `duo`, `trio`, `squad`
+- **Competition:** `pubs`, `ranked`, `bots`
 
 ### Examples
 
@@ -100,6 +122,15 @@ fn-stats PlayerName bots
 
 # Custom date range
 fn-stats PlayerName "starttime=24 May 2024 GMT" "endtime=26 May 2024 GMT"
+
+# Show raw stats output
+fn-stats PlayerName --raw ch5s2
+
+# Use TRN-style format
+fn-stats PlayerName --TRN ch5s2
+
+# Suppress log output
+fn-stats PlayerName --quiet ch5s2
 ```
 
 ## Updating Season Definitions

@@ -15,6 +15,9 @@ export const compModes = ['pubs', 'ranked', 'bots'];
 // Core game mode types
 export const gameModes = ['regular', 'reload'];
 
+// Input device types
+export const inputTypes = ['gamepad', 'keyboardmouse'];
+
 // Patterns used to match stat names in API responses
 export const statPattern = {
     matches: 'br_matchesplayed',

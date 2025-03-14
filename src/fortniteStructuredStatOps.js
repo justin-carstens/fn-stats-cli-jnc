@@ -1,6 +1,10 @@
 import { buildModes, gameModes, compModes, teamSizes, statPattern } from './fortniteModeConstants.js';
 
 /**
+ * Core statistics processing functions for Fortnite data
+ */
+
+/**
  * Transforms raw API stats into a structured hierarchical object
  * Raw stats come as flat key-value pairs like:
  * "br_kills_keyname": 123
@@ -14,27 +18,35 @@ import { buildModes, gameModes, compModes, teamSizes, statPattern } from './fort
  * - Team sizes: Matches size pattern in key name
  * 
  * @param {Object} rawStats - Raw stats from Epic Games API
+ * @param {boolean} includeBots - Whether to include bot matches in the structure (default: false)
  * @returns {Object} Structured stats object
  */
-export function createFortniteStatObject(rawStats) {
+export function createFortniteStatObject(rawStats, includeBots = false) {
     // Create empty result object and get all stat keys
     const statObject = {};
-    const keys = Object.keys(rawStats.stats);
+    const keys = Object.keys(rawStats.stats || {});
+    
+    // Skip processing if there are no stats
+    if (keys.length === 0) {
+        return statObject;
+    }
 
     // First level: Build modes (zeroBuild/build)
-    buildModes.forEach((buildMode) => {
-        statObject[buildMode] = {};
+    for (const buildMode of buildModes) {
         // Filter keys for this build mode (nobuild vs regular)
         const keyBuild = keys.filter(key => 
             buildMode === 'zeroBuild' ? key.includes('nobuild') : !key.includes('nobuild')
         );
+        
+        // Skip this build mode if no matching keys
+        if (keyBuild.length === 0) continue;
+        
+        const buildModeObject = {};
+        let hasBuildModeChildren = false;
 
         // Second level: Game modes (regular/reload)
-        gameModes.forEach((gameMode) => {
-            statObject[buildMode][gameMode] = {};
+        for (const gameMode of gameModes) {
             // Filter for game mode specific patterns
-            // Regular mode uses 'nobuildbr' or 'default'
-            // Reload mode uses various berry-themed playlist names
             const keyGame = keyBuild.filter(key => 
                 (gameMode === 'regular' && 
                     (key.includes('nobuildbr') || key.includes('default'))) 
@@ -42,12 +54,20 @@ export function createFortniteStatObject(rawStats) {
                 (gameMode === 'reload' && 
                     (key.includes('punchberry') || key.includes('sunflower') || key.includes('blastberry')))
             );
+            
+            // Skip this game mode if no matching keys
+            if (keyGame.length === 0) continue;
+            
+            const gameModeObject = {};
+            let hasGameModeChildren = false;
 
             // Third level: Competitive modes (pubs/ranked/bots)
-            compModes.forEach((compMode) => {
-                statObject[buildMode][gameMode][compMode] = {};
+            for (const compMode of compModes) {
+                // Skip bots mode unless explicitly requested
+                if (compMode === 'bots' && !includeBots) continue;
+                
                 const keyComp = keyGame.filter(key => 
-                    (compMode === 'pubs' && //pubs are games which don't have habanero (ranked) or bots
+                    (compMode === 'pubs' && 
                         !key.includes('habanero') && !key.includes('bots')) 
                     ||
                     (compMode === 'ranked' && 
@@ -56,32 +76,68 @@ export function createFortniteStatObject(rawStats) {
                     (compMode === 'bots' && 
                         key.includes('bots'))
                 );
+                
+                // Skip this comp mode if no matching keys
+                if (keyComp.length === 0) continue;
+                
+                const compModeObject = {};
+                let hasCompModeChildren = false;
 
-                teamSizes.forEach((size) => {
-                    if (gameMode === 'reload' && size === 'trio') return;
+                // Fourth level: Team sizes
+                for (const size of teamSizes) {
+                    // Skip trio in reload mode
+                    if (gameMode === 'reload' && size === 'trio') continue;
 
-                    statObject[buildMode][gameMode][compMode][size] = {};
                     const keySizeComp = keyComp.filter(key => key.includes(size));
+                    
+                    // Skip this team size if no matching keys
+                    if (keySizeComp.length === 0) continue;
 
-                    // Check for matches first
+                    // Check for matches first to determine if this team size has any stats
                     const matchesKey = keySizeComp.filter(key => key.includes(statPattern.matches));
-                    if (matchesKey.length > 0) {
-                        const matchCount = matchesKey.reduce((sum, key) => sum + rawStats.stats[key], 0);
-                        if (matchCount === 0) return; // Skip this team size if no matches
+                    if (matchesKey.length === 0 || 
+                        matchesKey.reduce((sum, key) => sum + rawStats.stats[key], 0) === 0) {
+                        continue; // Skip this team size if no matches or zero matches
                     }
 
-                    // Process remaining stats only if matches exist
+                    // Create team size object and add stats
+                    const teamSizeObject = {};
+                    
+                    // Process all stat types for this team size
                     Object.entries(statPattern).forEach(([statName, pattern]) => {
                         const keyStat = keySizeComp.filter(key => key.includes(pattern));
                         if (keyStat.length > 0) {
                             const accumulatedStats = keyStat.reduce((sum, key) => sum + rawStats.stats[key], 0);
-                            statObject[buildMode][gameMode][compMode][size][statName] = accumulatedStats;
+                            teamSizeObject[statName] = accumulatedStats;
                         }
                     });
-                });
-            });
-        });
-    });
+                    
+                    // Only add team size if it has stats
+                    if (Object.keys(teamSizeObject).length > 0) {
+                        compModeObject[size] = teamSizeObject;
+                        hasCompModeChildren = true;
+                    }
+                }
+
+                // Only add comp mode if it has children
+                if (hasCompModeChildren) {
+                    gameModeObject[compMode] = compModeObject;
+                    hasGameModeChildren = true;
+                }
+            }
+
+            // Only add game mode if it has children
+            if (hasGameModeChildren) {
+                buildModeObject[gameMode] = gameModeObject;
+                hasBuildModeChildren = true;
+            }
+        }
+
+        // Only add build mode if it has children
+        if (hasBuildModeChildren) {
+            statObject[buildMode] = buildModeObject;
+        }
+    }
 
     return statObject;
 }
@@ -209,43 +265,53 @@ export function subtractFortniteStatStructures(largerWindow, smallerWindow) {
 }
 
 /**
- * Subtracts raw Fortnite stats for overlapping time periods
- * Used when we have accumulated stats for two overlapping time windows
- * and want to isolate the stats for the non-overlapping period.
+
+/**
+ * Transforms the standard nested Fortnite stats into TRN-style format
+ * where stats are grouped only by team size (solo, duo, trio, squad)
  * 
- * Example:
- * Period A: [Jan 1 -> Mar 31] (largerWindow)
- * Period B: [Feb 1 -> Mar 31] (smallerWindow)
- * Result: [Jan 1 -> Jan 31] (isolated period)
- * 
- * Process:
- * 1. Combines all possible stat keys from both periods
- * 2. For each stat key:
- *    - Takes value from larger time window
- *    - Subtracts value from smaller window (overlapping period)
- * 3. Returns raw stats for the isolated period
- * 
- * Edge Cases:
- * - Missing keys in larger window: Treated as 0
- * - Missing keys in smaller window: Treated as 0
- * - Keys in neither: Won't appear in result
- * 
- * @param {Object} largerWindow - Raw stats object from the longer time period
- * @param {Object} smallerWindow - Raw stats object from the shorter, overlapping period
- * @returns {Object} Raw stats object for the isolated period
+ * @param {Object} stats - Standard nested stats object
+ * @returns {Object} TRN-style stats with only team size grouping (raw values only)
  */
-export function subtractRawFortniteStats(largerWindow, smallerWindow) {
-    return {
-        stats: Object.fromEntries(
-            Object.keys({
-                ...largerWindow.stats,
-                ...smallerWindow.stats
-            }).map(key => {
-                const largerWindowValue = largerWindow.stats[key];
-                const smallerWindowValue = smallerWindow.stats[key];
-                return [ key,(largerWindowValue || 0) - (smallerWindowValue || 0)]
+export function transformToTRNFormat(stats) {
+    // Initialize result with team sizes
+    const result = {};
+    
+    // Process all build modes
+    for (const buildMode of Object.keys(stats)) {
+        // Process all game modes
+        for (const gameMode of Object.keys(stats[buildMode])) {
+            // Process all comp modes except bots
+            for (const compMode of Object.keys(stats[buildMode][gameMode])) {
+                if (compMode === 'bots') continue;
+                
+                // Process all team sizes
+                for (const teamSize of Object.keys(stats[buildMode][gameMode][compMode])) {
+                    // Get stats for this team size
+                    const teamStats = stats[buildMode][gameMode][compMode][teamSize];
+                    
+                    // Initialize this team size if it doesn't exist
+                    if (!result[teamSize]) {
+                        result[teamSize] = {
+                            matches: 0,
+                            wins: 0,
+                            kills: 0,
+                            minutes: 0,
+                        };
+                    }
+                    
+                    // Aggregate raw stats only (not calculated rates)
+                    for (const statKey of Object.keys(teamStats)) {
+                        if (typeof teamStats[statKey] === 'number' && 
+                            !statKey.endsWith('Rate') && 
+                            !['killsPerDeath', 'killsPer20', 'minutesPerKill'].includes(statKey)) {
+                            result[teamSize][statKey] = (result[teamSize][statKey] || 0) + teamStats[statKey];
+                        }
+                    }
                 }
-            )
-        )
-    };
+            }
+        }
+    }
+    
+    return result;
 }

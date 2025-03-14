@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
-import { EpicClient } from './src/epicWrapper.js';
+import { EpicClient } from '../src/epicWrapper.js';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { seasonTimestamps } from './src/getSeasonTimes.js';
-import { statPattern } from './src/fortniteModeConstants.js';
+import { seasonTimestamps } from '../src/getSeasonTimes.js';
+import { statPattern } from '../src/fortniteModeConstants.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
