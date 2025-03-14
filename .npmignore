@@ -16,12 +16,6 @@ Thumbs.db
 .git/
 .gitignore
 
-# Documentation and examples
-docs/
-examples/
-*.md
-!README.md
-
 # Development files
 *.test.js
 *.spec.js
